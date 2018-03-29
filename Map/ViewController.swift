@@ -13,6 +13,8 @@ import Cartography
 class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
     
     var checkTableView: Bool = true
+    private var places: [MKPointAnnotation] = []
+    let sbHeight = UIApplication.shared.statusBarFrame.height
     
     lazy var myMap:MKMapView = {
         return MKMapView.init()
@@ -44,7 +46,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         table.register(UITableViewCell.self, forCellReuseIdentifier: "myCell")
         table.alpha = 0.0
         table.backgroundColor = UIColor.clear
-        
+        table.separatorStyle = .none
         let blur = UIBlurEffect(style: .light)
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = self.view.bounds
@@ -52,23 +54,18 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         return table
     }()
     
-    
-    private var places: [MKPointAnnotation] = []
-    
-    func setNavigationBar() {
-        let sbHeight = UIApplication.shared.statusBarFrame.height
-        let screenSize: CGRect = UIScreen.main.bounds
-        let navBar = UINavigationBar(frame: CGRect(x: 0, y: sbHeight, width: screenSize.width, height: 80))
-        let navItem = UINavigationItem(title: "Map")
-        let locationsItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.organize, target: nil, action: #selector(tableViewContent(_:)))
-        navItem.rightBarButtonItem = locationsItem
-        navBar.setItems([navItem], animated: false)
-        self.view.addSubview(navBar)
-    }
 
-    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let screenSize: CGRect = UIScreen.main.bounds
+        let navBar: UINavigationBar = UINavigationBar(frame: CGRect(x: 0, y: 0, width: screenSize.width, height: 44))
+        self.view.addSubview(navBar);
+        let navItem = UINavigationItem(title: "SomeTitle");
+        let doneItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.organize, target: nil, action: #selector(tableViewContent(_:)));
+        navItem.rightBarButtonItem = doneItem;
+        navBar.setItems([navItem], animated: false);
         
         let longPressed = UILongPressGestureRecognizer(target: self, action: #selector(setLocation(_:)))
         
@@ -80,8 +77,8 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         view.addSubview(viewBlurred)
         view.addSubview(segment)
         view.addGestureRecognizer(longPressed)
+        view.addSubview(navBar)
         
-        self.setNavigationBar()
         setupConstraints()
         
         
@@ -95,7 +92,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
             
             table.height == map.height
             table.width == map.width
-            table.top == map.top+54
+            table.top == map.top + sbHeight
             
             viewblurred.width == map.width
             viewblurred.height == map.height/10
@@ -112,11 +109,22 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath)
         cell.textLabel?.text = places[indexPath.row].title
         cell.detailTextLabel?.text = places[indexPath.row].subtitle
         cell.backgroundColor = UIColor.clear
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let currentPlace = places[indexPath.row]
+        myMap.setRegion(MKCoordinateRegionMakeWithDistance(currentPlace.coordinate, 1000, 1000), animated: true)
+        UIView.animate(withDuration: 0.2, animations: { () -> Void in
+            self.tableView.alpha = 0.0
+        })
+        tableView.deselectRow(at: indexPath, animated: true)
+        navigationItem.title = currentPlace.title
     }
     
     @objc func segmentStyle(_ segmentControl: UISegmentedControl){
@@ -161,9 +169,9 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
             annotation.coordinate = coordinate
             self.myMap.addAnnotation(annotation)
             self.myMap.setRegion(MKCoordinateRegionMakeWithDistance(coordinate, 1000, 1000), animated: true)
-            
             self.places.append(annotation)
             self.tableView.reloadData()
+            self.navigationItem.title = title
         }))
         
         // 4. Present the alert.
@@ -186,5 +194,8 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         }
     }
 
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
 }
 
