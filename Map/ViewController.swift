@@ -28,11 +28,22 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         segment.selectedSegmentIndex = 0
         segment.tintColor = UIColor.black
         myMap.mapType = .standard
-        
         segment.backgroundColor = UIColor(white: 1, alpha: 0)
         return segment
     }()
     
+    lazy var forwardButton:UIButton = {
+        let forButton = UIButton(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        forButton.backgroundColor = UIColor.clear
+        return forButton
+        
+    }()
+    lazy var backwardButton:UIButton = {
+        let backButton = UIButton(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        backButton.backgroundColor = UIColor.clear
+        return backButton
+        
+    }()
     lazy var viewBlurred:UIVisualEffectView = {
         let viewblurred = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         //viewb.isUserInteractionEnabled = false
@@ -70,6 +81,8 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         let longPressed = UILongPressGestureRecognizer(target: self, action: #selector(setLocation(_:)))
         
         segment.addTarget(nil, action: #selector(segmentStyle(_:)), for: .valueChanged)
+        forwardButton.addTarget(nil, action: #selector(forward(_:)), for: .touchUpInside)
+        backwardButton.addTarget(nil, action: #selector(backward(_:)), for: .touchUpInside)
         
         view.isUserInteractionEnabled = true
         view.addSubview(myMap)
@@ -78,6 +91,8 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         view.addSubview(segment)
         view.addGestureRecognizer(longPressed)
         view.addSubview(navBar)
+        view.addSubview(forwardButton)
+        view.addSubview(backwardButton)
         
         setupConstraints()
         
@@ -85,7 +100,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     }
     
     func setupConstraints() -> Void {
-        constrain(myMap,tableView,segment,viewBlurred){ map,table,segment,viewblurred in
+        constrain(myMap,tableView,segment,viewBlurred, forwardButton, backwardButton){ map,table,segment,viewblurred, forBtn, backBtn in
             map.width == view.bounds.width
             map.height == view.bounds.height
             map.top == (map.superview?.top)!
@@ -101,6 +116,16 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
             segment.width == self.view.bounds.width/1.5
             segment.height == self.view.bounds.width/12
             segment.center == viewblurred.center
+            
+            forBtn.width == 50
+            forBtn.height == segment.height
+            forBtn.right == (map.superview?.right)!
+            forBtn.bottom == map.bottom
+            
+            backBtn.width == 50
+            backBtn.height == segment.height
+            backBtn.left == (map.superview?.left)!
+            backBtn.bottom == map.bottom
             
         }
     }
@@ -125,6 +150,16 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         })
         tableView.deselectRow(at: indexPath, animated: true)
         navigationItem.title = currentPlace.title
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            print("Deleted")
+            self.myMap.removeAnnotation(places[indexPath.row])
+            self.places.remove(at: indexPath.row)
+            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            
+    }
     }
     
     @objc func segmentStyle(_ segmentControl: UISegmentedControl){
@@ -164,6 +199,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
             let subtitle = alert?.textFields![1].text
             
             let annotation = MKPointAnnotation()
+            
             annotation.title = title
             annotation.subtitle = subtitle
             annotation.coordinate = coordinate
@@ -196,6 +232,51 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
 
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    
+    var currentPin = 0
+    @objc func forward(_ sender: UIButton){
+        print(currentPin)
+        currentPin += 1
+        if(currentPin >= places.count){
+            currentPin = 0
+        }
+        self.myMap.setRegion(MKCoordinateRegionMakeWithDistance(places[currentPin].coordinate, 1000, 1000), animated: true)
+        print("Forward clicked")
+    }
+    @objc func backward(_ sender: UIButton){
+        print(currentPin)
+        currentPin -= 1
+        if(currentPin < 0){
+            currentPin = places.count-1
+        }
+        self.myMap.setRegion(MKCoordinateRegionMakeWithDistance(places[currentPin].coordinate, 1000, 1000), animated: true)
+        print("Backward clicked")
+    }
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation)
+        -> MKAnnotationView? {
+            if annotation is MKUserLocation {
+                
+            }
+            let reuseId = "pin"
+            
+            var pinView = mapView.dequeueReusableAnnotationView(withIdentifier:
+                reuseId) as? MKPinAnnotationView
+            if pinView == nil {
+                pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+                pinView!.canShowCallout = true
+                pinView!.animatesDrop = true
+                let calloutButton = UIButton(type: .detailDisclosure)
+                pinView!.rightCalloutAccessoryView = calloutButton
+                pinView!.sizeToFit()
+            }
+            else {
+                pinView!.annotation = annotation
+            }
+            
+            return pinView
     }
 }
 

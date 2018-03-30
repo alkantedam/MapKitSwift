@@ -14,6 +14,7 @@
 		C7C4A635206D2C3100713A0F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7C4A634206D2C3100713A0F /* Assets.xcassets */; };
 		C7C4A643206D2C3100713A0F /* MapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C4A642206D2C3100713A0F /* MapTests.swift */; };
 		C7C4A64E206D2C3100713A0F /* MapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C4A64D206D2C3100713A0F /* MapUITests.swift */; };
+		C7C4A65C206D5D5E00713A0F /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C4A65B206D5D5E00713A0F /* Location.swift */; };
 		E2413FE03CC45A0A2D8A50B4 /* Pods_Map.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A46313CB67E05C9F383F9ABB /* Pods_Map.framework */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +52,7 @@
 		C7C4A649206D2C3100713A0F /* MapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7C4A64D206D2C3100713A0F /* MapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapUITests.swift; sourceTree = "<group>"; };
 		C7C4A64F206D2C3100713A0F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7C4A65B206D5D5E00713A0F /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		CD4ABCCB8E796B1CBCF2626B /* Pods-MapTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MapTests/Pods-MapTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CDA24CC2FF18C0BA69468466 /* Pods-MapTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MapTests/Pods-MapTests.release.xcconfig"; sourceTree = "<group>"; };
 		D674C5AF8208A2B8D030B003 /* Pods_MapTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MapTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -127,6 +129,7 @@
 				C7C4A62F206D2C3100713A0F /* ViewController.swift */,
 				C7C4A634206D2C3100713A0F /* Assets.xcassets */,
 				C7C4A639206D2C3100713A0F /* Info.plist */,
+				C7C4A65B206D5D5E00713A0F /* Location.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -451,6 +454,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C7C4A630206D2C3100713A0F /* ViewController.swift in Sources */,
+				C7C4A65C206D5D5E00713A0F /* Location.swift in Sources */,
 				C7C4A62E206D2C3100713A0F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
